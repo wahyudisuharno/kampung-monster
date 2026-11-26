@@ -401,6 +401,23 @@ function manage(msg){
  $("rf").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){$("rt").value=r.result;note("File dibaca. Ketuk Pulihkan untuk melanjutkan.")};r.readAsText(f)};
  $("rs2").onclick=function(){var t=$("rt").value;if(!t.trim())return note("Tempel kode cadangan dulu.");rest(t)?manage("Pemulihan berhasil."):note("Kode tidak valid. Pastikan kode tersalin utuh.")};
 }
+var DKD=[[0,0,280],[1,2,330],[2,1,45],[3,0,8],[0,2,300],[1,1,35],[2,0,255],[3,2,350],[0,1,20]];
+function dkSVG(j,m,sz,bs){var d=DKD[j%9],b=d[0],a=d[1],h=d[2],c=Math.floor(j/3)%3,col="hsl("+h+",75%,62%)",dd="hsl("+h+",60%,26%)",ln=" stroke='"+dd+"' stroke-width='4' stroke-linejoin='round'",s="",
+ AN=[[100,46,38],[100,68,30],[100,56,40],[100,62,40]][b],cx=AN[0],t=AN[1],w=AN[2],fy=(b===0||b===3)?108:112,
+ body=["<path d='M44 170V100Q44 44 100 44Q156 44 156 100V170L134 154L116 172L100 154L84 172L66 154Z' ","<path d='M100 38Q152 100 152 132Q152 176 100 176Q48 176 48 132Q48 100 100 38Z' ","<rect x='52' y='56' width='96' height='114' rx='10' ","<path d='M44 60H156Q164 60 164 70V146Q164 156 156 156H92L66 180L70 156H44Q36 156 36 146V70Q36 60 44 60Z' "][b],
+ E=[[[-20,-6],[20,-6]],[[0,-8]],[[-22,-2],[0,-14],[22,-2]]][c],k=c===1?1.7:1;
+ s+="<ellipse cx='100' cy='184' rx='44' ry='6' fill='#000' opacity='.18'/>"+body+"fill='"+col+"'"+ln+"/>";
+ if(b===2)s+="<rect x='52' y='56' width='14' height='114' rx='6' fill='"+dd+"' opacity='.5'/><path d='M72 162H144' stroke='#fff' stroke-width='4' opacity='.5'/><path d='M126 170V186L134 180L142 186V170Z' fill='#ff5d73' stroke='"+dd+"' stroke-width='3'/>";
+ s+="<ellipse cx='80' cy='"+(t+24)+"' rx='16' ry='8' fill='#fff' opacity='.4' transform='rotate(-25 80 "+(t+24)+")'/>";
+ s+="<g transform='translate(100 "+fy+")'>";
+ E.forEach(function(p){s+="<g transform='translate("+p[0]+" "+p[1]+") scale("+k+")'>"+eye(m,p[0]>0?-1:1)+"</g>"});
+ s+=mouth(m,j)+"</g>";
+ if(a===2){E.forEach(function(p){s+="<circle cx='"+(100+p[0])+"' cy='"+(fy+p[1])+"' r='"+(c===1?25:15)+"' fill='#fff' fill-opacity='.18' stroke='#6b4423' stroke-width='3.5'/>"});
+  if(E.length>1)s+="<path d='M"+(100+E[0][0]+15)+" "+(fy+E[0][1])+"H"+(100+E[1][0]-15)+"' stroke='#6b4423' stroke-width='3.5'/>"}
+ if(a===0)s+="<path d='M"+(cx-w)+" "+(t+10)+"Q"+cx+" "+(t-40)+" "+(cx+w)+" "+(t+10)+"Z' fill='#8a5a2b' stroke='#4a2f12' stroke-width='3.5' stroke-linejoin='round'/><rect x='"+(cx-w*.7)+"' y='"+(t-6)+"' width='"+(w*1.4)+"' height='7' fill='#e9c46a'/><ellipse cx='"+cx+"' cy='"+(t+10)+"' rx='"+(w+10)+"' ry='6' fill='#a86f3a' stroke='#4a2f12' stroke-width='3.5'/>";
+ if(a===1)s+="<g transform='translate("+(cx-w*.55)+" "+(t+2)+") rotate(-28)'><rect x='-6' y='-40' width='12' height='36' rx='2' fill='#ffd23f' stroke='#8a5a00' stroke-width='3'/><path d='M-6 -4L0 12L6 -4Z' fill='#f5d9b0' stroke='#8a5a00' stroke-width='3' stroke-linejoin='round'/><rect x='-6' y='-48' width='12' height='9' rx='3' fill='#ff7a9c' stroke='#8a5a00' stroke-width='3'/></g>";
+ if(bs)s+="<path d='M78 "+(t+6)+"L80 "+(t-20)+"L91 "+(t-6)+"L100 "+(t-24)+"L109 "+(t-6)+"L120 "+(t-20)+"L122 "+(t+6)+"Z' fill='#ffd23f' stroke='#8a5a00' stroke-width='3' stroke-linejoin='round'/>";
+ return "<svg viewBox='0 0 200 190' width='"+sz+"' height='"+Math.round(sz*.95)+"' role='img' aria-label='Monster'>"+s+"</svg>"}
 var DK=(function(){
 var ST={c:{},days:{}},S={lv:0,mi:0,mhp:3,mx:3,hp:5,q:null,weak:[],seen:[],busy:false,got:[]};
 function load(){S.got=ld("pa-dkkoleksi",[]);ST=ld("pa-dkstat",{c:{},days:{}})}load();
@@ -408,45 +425,103 @@ function ally(m){return monSVG(FAV(),m,64,FAV()%3===2,(monI()*47+180)%360)}
 function pal(ok){var p=document.getElementById("pal");if(!p||FAV()<0)return;p.innerHTML=ally(ok?"laugh":"sad");p.className="pal";void p.offsetWidth;p.className="pal "+(ok?"cheer":"sadp")}
 var LVN=["Detektif Magang","Detektif Muda","Detektif Senior"],LVD=["Kelas 2-3","Kelas 4-5","Kelas 5-6"];
 var DM=[1,5,9,14,18,22,27,31,35],DN=["Hurufo","Eja Nakal","Ratu Kata","Imbuhan","Sinon","Raja Kalimat","Paragrafo","Baku Kaku","Kamus Besar"];
-var CAT=[["ej","Ejaan"],["im","Imbuhan"],["mk","Makna kata"],["kl","Tata bahasa"],["bc","Membaca"]];
+var CAT=[["ej","Ejaan"],["im","Imbuhan"],["mk","Makna kata"],["kl","Tata bahasa"],["bc","Membaca"],["hk","Huruf kacau"]];
 
 /* ---------- bank soal ---------- */
-var EJ=[["izin","ijin",0],["silakan","silahkan",0],["zaman","jaman",0],["Jumat","Jum'at",0],["apotek","apotik",0],
-["nasihat","nasehat",1],["jadwal","jadual",1],["risiko","resiko",1],["objek","obyek",1],["kualitas","kwalitas",1],["teknik","tehnik",1],["praktik","praktek",1],
-["analisis","analisa",2],["hakikat","hakekat",2],["kuitansi","kwitansi",2],["andal","handal",2],["aktivitas","aktifitas",2],["frekuensi","frekwensi",2],["sistem","sistim",2],["manajemen","menejemen",2]];
-var IM=[["main","bermain","ber",0],["lari","berlari","ber",0],["jalan","berjalan","ber",0],["ajar","belajar","ber",0],["kerja","bekerja","ber",0],["renang","berenang","ber",0],["sepeda","bersepeda","ber",0],
-["tulis","menulis","me",1],["sapu","menyapu","me",1],["baca","membaca","me",1],["ambil","mengambil","me",1],["kirim","mengirim","me",1],["beli","membeli","me",1],["cuci","mencuci","me",1],["tolong","menolong","me",1],["dengar","mendengar","me",1],["gambar","menggambar","me",1],["bantu","membantu","me",1],
-["pukul","memukul","me",2],["nyanyi","menyanyi","me",2],["tangkap","menangkap","me",2],["pakai","memakai","me",2],["panjat","memanjat","me",2],["tani","petani","pe",2],["tulis","penulis","pe",2],["main","pemain","pe",2],["jual","penjual","pe",2],["ajar","pengajar","pe",2]];
-var AN=[["tinggi","rendah",0],["besar","kecil",0],["terang","gelap",0],["naik","turun",0],["panas","dingin",0],["ramai","sepi",0],
-["rajin","malas",1],["kaya","miskin",1],["berani","takut",1],["jujur","curang",1],["bersih","kotor",1],["maju","mundur",1],
-["hemat","boros",2],["kuno","modern",2],["ramah","ketus",2],["gembira","murung",2],["terbuka","tertutup",2]];
-var SN=[["pintar","pandai",0],["cepat","lekas",0],["murid","siswa",0],["ayah","bapak",0],["cantik","indah",1],["gembira","senang",1],["lucu","jenaka",2],["luas","lapang",2]];
+var EJ=[["izin","ijin",0],["silakan","silahkan",0],["zaman","jaman",0],["Jumat","Jum'at",0],["apotek","apotik",0],["tahu","tau",0],["bagaimana","gimana",0],["tidak","nggak",0],["sudah","udah",0],["sangat","banget",0],["pikir","fikir",0],["bohong","boong",0],["terima kasih","makasih",0],
+["nasihat","nasehat",1],["jadwal","jadual",1],["risiko","resiko",1],["objek","obyek",1],["kualitas","kwalitas",1],["teknik","tehnik",1],["praktik","praktek",1],["mengubah","merubah",1],["kaus","kaos",1],["atlet","atlit",1],["Februari","Pebruari",1],["November","Nopember",1],["terampil","trampil",1],["napas","nafas",1],["sopir","supir",1],["ijazah","ijasah",1],["khawatir","kuatir",1],["aktif","aktip",1],["telepon","telpon",1],["subuh","shubuh",1],
+["analisis","analisa",2],["hakikat","hakekat",2],["kuitansi","kwitansi",2],["andal","handal",2],["aktivitas","aktifitas",2],["frekuensi","frekwensi",2],["sistem","sistim",2],["manajemen","menejemen",2],["konsekuen","konsekwen",2],["kuantitas","kwantitas",2],["lembap","lembab",2],["asas","azas",2],["efektif","efektip",2],["motif","motip",2],["kreatif","kreatip",2],["positif","positip",2],["azan","adzan",2]];
+var IM=[["main","bermain","ber",0],["lari","berlari","ber",0],["jalan","berjalan","ber",0],["ajar","belajar","ber",0],["kerja","bekerja","ber",0],["renang","berenang","ber",0],["sepeda","bersepeda","ber",0],["nyanyi","bernyanyi","ber",0],["baris","berbaris","ber",0],["bicara","berbicara","ber",0],["hitung","berhitung","ber",0],["doa","berdoa","ber",0],["libur","berlibur","ber",0],["tanya","bertanya","ber",0],["sekolah","bersekolah","ber",0],["dagang","berdagang","ber",0],["tamu","bertamu","ber",0],
+["tulis","menulis","me",1],["sapu","menyapu","me",1],["baca","membaca","me",1],["ambil","mengambil","me",1],["kirim","mengirim","me",1],["beli","membeli","me",1],["cuci","mencuci","me",1],["tolong","menolong","me",1],["dengar","mendengar","me",1],["gambar","menggambar","me",1],["bantu","membantu","me",1],["tanam","menanam","me",1],["jahit","menjahit","me",1],["lukis","melukis","me",1],["masak","memasak","me",1],["sikat","menyikat","me",1],["tonton","menonton","me",1],["siram","menyiram","me",1],["buka","membuka","me",1],["tutup","menutup","me",1],["tangis","menangis","me",1],["tari","menari","me",1],["lihat","melihat","me",1],["cari","mencari","me",1],["jual","menjual","me",1],["petik","memetik","me",1],["gunting","menggunting","me",1],
+["pukul","memukul","me",2],["nyanyi","menyanyi","me",2],["tangkap","menangkap","me",2],["pakai","memakai","me",2],["panjat","memanjat","me",2],["ketik","mengetik","me",2],["setrika","menyetrika","me",2],["pel","mengepel","me",2],["cat","mengecat","me",2],["lap","mengelap","me",2],
+["tani","petani","pe",2],["tulis","penulis","pe",2],["main","pemain","pe",2],["jual","penjual","pe",2],["ajar","pengajar","pe",2],["lari","pelari","pe",2],["tari","penari","pe",2],["nyanyi","penyanyi","pe",2],["tolong","penolong","pe",2],["lukis","pelukis","pe",2],["jahit","penjahit","pe",2],["buru","pemburu","pe",2],["jaga","penjaga","pe",2],["beli","pembeli","pe",2],["baca","pembaca","pe",2],
+["bersih","kebersihan","kean",2],["sehat","kesehatan","kean",2],["adil","keadilan","kean",2],["baik","kebaikan","kean",2],["cantik","kecantikan","kean",2],["pandai","kepandaian","kean",2],["sedih","kesedihan","kean",2],["senang","kesenangan","kean",2]];
+var AN=[["tinggi","rendah",0],["besar","kecil",0],["terang","gelap",0],["naik","turun",0],["panas","dingin",0],["ramai","sepi",0],["kering","basah",0],["jauh","dekat",0],["siang","malam",0],["gemuk","kurus",0],["buka","tutup",0],["masuk","keluar",0],["datang","pergi",0],["sehat","sakit",0],["benar","salah",0],["penuh","kosong",0],["muda","tua",0],["mudah","sulit",0],
+["rajin","malas",1],["kaya","miskin",1],["berani","takut",1],["jujur","curang",1],["bersih","kotor",1],["maju","mundur",1],["tebal","tipis",1],["dalam","dangkal",1],["murah","mahal",1],["kuat","lemah",1],["asli","palsu",1],["untung","rugi",1],["awal","akhir",1],["menang","kalah",1],["rapi","berantakan",1],["sempit","luas",1],
+["hemat","boros",2],["kuno","modern",2],["ramah","ketus",2],["gembira","murung",2],["terbuka","tertutup",2],["bertemu","berpisah",2],["tenang","gaduh",2],["tumpul","tajam",2],["jernih","keruh",2],["cekatan","lamban",2],["sederhana","mewah",2]];
+var SN=[["pintar","pandai",0],["cepat","lekas",0],["murid","siswa",0],["ayah","bapak",0],["ibu","bunda",0],
+["cantik","indah",1],["gembira","senang",1],["bohong","dusta",1],["rajin","tekun",1],["marah","berang",1],["takut","gentar",1],["pakaian","busana",1],
+["lucu","jenaka",2],["luas","lapang",2],["hening","sunyi",2],["bijaksana","arif",2],["cemas","khawatir",2]];
+var HK=[["buku",0],["meja",0],["sapi",0],["kuda",0],["ikan",0],["bola",0],["roti",0],["topi",0],["baju",0],["mata",0],["bulan",0],["jeruk",0],["kursi",0],
+["sekolah",1],["kucing",1],["pelangi",1],["jendela",1],["pensil",1],["sepatu",1],["tangan",1],["pisang",1],["belajar",1],["gembira",1],["pesawat",1],
+["matahari",2],["bermain",2],["pahlawan",2],["kebersihan",2],["persahabatan",2],["perpustakaan",2],["pengetahuan",2],["pemandangan",2],["kemerdekaan",2],["pendidikan",2]];
+var T3=["kata kerja","kata benda","kata sifat","kata bilangan"];
 var KL=[["Kucing itu ___ tikus di dapur.","mengejar",["mengajar","mengambil","menjahit"],0],
 ["Cuaca sangat ___, jadi kami memakai jaket.","dingin",["panas","ramai","manis"],0],
 ["Aku minum ___ saat haus.","air",["batu","kursi","sepatu"],0],
 ["Ibu membeli apel, jeruk, ___ pisang di pasar.","dan",["tetapi","karena","supaya"],0],
 ["Kamu mau minum teh ___ kopi?","atau",["tetapi","karena","supaya"],0],
+["Huruf pertama di awal kalimat ditulis dengan huruf ...","kapital",["kecil","miring","tebal"],0],
+["Kata “lari” termasuk kata ...","kata kerja",["kata benda","kata sifat","kata bilangan"],0],
+["Kata “merah” termasuk kata ...","kata sifat",["kata kerja","kata benda","kata bilangan"],0],
+["Kata “kucing” termasuk kata ...","kata benda",["kata kerja","kata sifat","kata bilangan"],0],
+["Kata tanya untuk menanyakan orang adalah ...","siapa",["kapan","mengapa","di mana"],0],
+["Kata tanya untuk menanyakan tempat adalah ...","di mana",["siapa","kapan","mengapa"],0],
+["Tanda baca di akhir kalimat berita adalah ...","tanda titik",["tanda tanya","tanda seru","tanda koma"],0],
 ["Budi tidak masuk sekolah ___ ia sakit.","karena",["tetapi","atau","supaya"],1],
 ["Aku belajar giat ___ naik kelas.","supaya",["tetapi","atau","meskipun"],1],
 ["Hujan turun deras, ___ kami tetap bermain bola.","tetapi",["karena","atau","supaya"],1],
 ["___ rajin berlatih, dia menjadi juara.","Karena",["Tetapi","Atau","Sambil"],1],
 ["Ayah naik motor, ___ ibu naik angkot.","sedangkan",["karena","supaya","atau"],1],
+["Kita harus makan sayur ___ badan sehat.","supaya",["tetapi","atau","sebelum"],1],
+["Aku suka apel ___ adikku suka jeruk.","sedangkan",["atau","supaya","sehingga"],1],
+["Kakak sedang sakit ___ ia tidak masuk sekolah.","sehingga",["tetapi","atau","sedangkan"],1],
+["Mau pergi sekarang ___ nanti sore?","atau",["karena","tetapi","supaya"],1],
+["Dia tersenyum ___ hatinya sedih.","tetapi",["supaya","atau","sebelum"],1],
+["Kata “tiga” termasuk kata ...","kata bilangan",["kata kerja","kata benda","kata sifat"],1],
+["Kata “saya” termasuk kata ...","kata ganti",["kata kerja","kata benda","kata sifat"],1],
+["Kata tanya untuk menanyakan jumlah adalah ...","berapa",["siapa","kapan","di mana"],1],
+["Tanda baca di akhir kalimat seru adalah ...","tanda seru",["tanda titik","tanda tanya","tanda koma"],1],
+["Huruf kapital dipakai di awal penulisan ...","nama orang",["nama buah","nama warna","kata kerja"],1],
+["Kalimat yang penulisannya benar adalah ...","Adik pergi ke Bandung.",["adik pergi ke bandung.","Adik pergi kebandung.","Adik pergi ke Bandung"],1],
+["Kalimat yang penulisannya benar adalah ...","Ibu memasak di dapur.",["ibu memasak di dapur.","Ibu memasak didapur.","Ibu memasak di dapur"],1],
 ["Kata tanya untuk menanyakan sebab adalah ...","mengapa",["kapan","siapa","di mana"],2],
 ["Kata tanya untuk menanyakan waktu adalah ...","kapan",["siapa","mengapa","di mana"],2],
+["Kata tanya untuk menanyakan cara adalah ...","bagaimana",["siapa","kapan","di mana"],2],
 ["Tanda baca di akhir kalimat tanya adalah ...","tanda tanya",["titik","koma","tanda seru"],2],
 ["Kata “makan” termasuk kata ...","kata kerja",["kata benda","kata sifat","kata bilangan"],2],
 ["Kata “indah” termasuk kata ...","kata sifat",["kata kerja","kata benda","kata bilangan"],2],
 ["Kata “buku” termasuk kata ...","kata benda",["kata kerja","kata sifat","kata bilangan"],2],
-["Kalimat “Tolong bukakan pintu!” adalah kalimat ...","perintah",["tanya","berita","sapaan"],2]];
-var P1="Ani memiliki kucing bernama Mimi. Setiap pagi Ani memberi Mimi susu.",P2="Pak Tani bangun sebelum matahari terbit. Ia pergi ke sawah membawa cangkul. Sore hari ia pulang dengan badan lelah tetapi senang.",P3="Dina menutup bukunya dengan wajah murung. Nilai ulangannya lebih rendah dari teman-temannya. Ia memutuskan belajar lebih giat setiap malam.";
+["Kalimat “Tolong bukakan pintu!” adalah kalimat ...","perintah",["tanya","berita","sapaan"],2],
+["Kalimat berikut yang merupakan kalimat tanya adalah ...","Siapa yang memecahkan gelas itu?",["Tolong ambilkan gelas itu.","Gelas itu pecah tadi pagi.","Wah, gelas itu cantik sekali!"],2],
+["Kalimat berikut yang merupakan kalimat perintah adalah ...","Tutup pintu itu sekarang.",["Pintu itu terbuka lebar.","Siapa yang membuka pintu?","Wah, pintunya besar sekali!"],2],
+["Kalimat berikut yang merupakan kalimat seru adalah ...","Wah, indah sekali pemandangan ini!",["Pemandangan ini sangat indah.","Di mana pemandangan itu?","Lihatlah pemandangan itu."],2],
+["Arti peribahasa “bersatu kita teguh” adalah ...","persatuan membuat kita kuat",["bersatu itu melelahkan","sendirian lebih baik","bertengkar itu wajar"],2],
+["Arti peribahasa “rajin pangkal pandai” adalah ...","rajin belajar membuat kita pandai",["pandai membuat kita malas","rajin itu melelahkan","pandai tanpa belajar"],2],
+["Arti peribahasa “malu bertanya sesat di jalan” adalah ...","kalau tidak bertanya kita bisa salah arah",["bertanya membuat kita tersesat","jalan itu selalu lurus","malu itu baik"],2],
+["Arti peribahasa “sedikit demi sedikit lama-lama menjadi bukit” adalah ...","hal kecil yang dilakukan terus akan menjadi besar",["bukit itu sangat tinggi","kerja sedikit sudah cukup","sedikit itu tidak berguna"],2],
+["Arti peribahasa “berakit-rakit ke hulu, berenang-renang ke tepian” adalah ...","bersusah-susah dahulu, bersenang-senang kemudian",["bersenang-senang dahulu, bersusah kemudian","berenang itu menyenangkan","hulu itu dekat tepian"],2]];
+var P1="Ani memiliki kucing bernama Mimi. Setiap pagi Ani memberi Mimi susu.",P2="Pak Tani bangun sebelum matahari terbit. Ia pergi ke sawah membawa cangkul. Sore hari ia pulang dengan badan lelah tetapi senang.",P3="Dina menutup bukunya dengan wajah murung. Nilai ulangannya lebih rendah dari teman-temannya. Ia memutuskan belajar lebih giat setiap malam.",
+P4="Budi dan Sinta pergi ke kebun binatang. Mereka melihat gajah, jerapah, dan monyet. Budi paling suka melihat gajah.",P5="Pagi itu Ibu membuat nasi goreng. Ayah menyiapkan teh hangat. Adik menata piring di meja makan.",P6="Di taman ada kolam kecil. Banyak ikan berenang di dalamnya. Anak-anak memberi makan ikan setiap sore.",
+P7="Lebah mengumpulkan nektar dari bunga. Nektar dibawa ke sarang, lalu diolah menjadi madu.",P8="Pada hari Minggu, warga bergotong royong membersihkan lingkungan. Bapak-bapak memotong rumput, ibu-ibu menyapu jalan, dan anak-anak mengumpulkan sampah. Setelah selesai, lingkungan menjadi bersih dan nyaman.",P9="Dodi lupa membawa bekal. Temannya, Wawan, membagi roti miliknya menjadi dua. Dodi sangat berterima kasih.",
+P10="Setiap hari Minggu, Pak Hasan membersihkan selokan di depan rumahnya. Beberapa tetangga mulai ikut membantu. Kini jalan di kampung itu tidak lagi tergenang air saat hujan.",P11="Tumbuhan membutuhkan cahaya matahari, air, dan udara untuk tumbuh. Jika daun tidak terkena cahaya matahari, tumbuhan menjadi pucat dan lemah.",P12="Rani selalu menyisihkan sebagian uang sakunya setiap hari. Setelah tiga bulan, tabungannya cukup untuk membeli sepatu baru. Ia senang karena tidak perlu meminta kepada orang tuanya.",P13="Banjir sering terjadi karena sampah menyumbat saluran air. Selain itu, hutan yang gundul tidak mampu menyerap air hujan.";
 var BC=[[P1,"Siapa nama kucing Ani?","Mimi",["Susu","Pagi","Ani"],0],
 [P1,"Apa yang Ani berikan kepada Mimi setiap pagi?","Susu",["Ikan","Nasi","Roti"],0],
 ["Rudi membawa payung ke sekolah karena langit mendung.","Mengapa Rudi membawa payung?","Langit mendung",["Hari panas","Payungnya baru","Ingin bermain"],0],
+[P4,"Hewan apa yang paling disukai Budi?","Gajah",["Jerapah","Monyet","Singa"],0],
+[P4,"Ke mana Budi dan Sinta pergi?","Kebun binatang",["Pasar","Sekolah","Taman bermain"],0],
+[P5,"Siapa yang menata piring di meja makan?","Adik",["Ibu","Ayah","Kakak"],0],
+[P5,"Apa yang dibuat Ibu pagi itu?","Nasi goreng",["Teh hangat","Roti bakar","Bubur"],0],
+[P6,"Kapan anak-anak memberi makan ikan?","Setiap sore",["Setiap pagi","Setiap malam","Setiap siang"],0],
+[P6,"Apa yang ada di dalam kolam?","Ikan",["Bebek","Katak","Kura-kura"],0],
 [P2,"Apa yang dibawa Pak Tani ke sawah?","Cangkul",["Payung","Buku","Jala"],1],
 [P2,"Kapan Pak Tani pulang?","Sore hari",["Pagi hari","Tengah malam","Siang hari"],1],
 ["Ulat berubah menjadi kepompong lebih dulu. Setelah beberapa hari, kepompong menetas menjadi kupu-kupu.","Apa yang terjadi setelah ulat menjadi kepompong?","Menetas menjadi kupu-kupu",["Menjadi ulat lagi","Menjadi belalang","Mati dan hilang"],1],
+[P7,"Apa yang dikumpulkan lebah dari bunga?","Nektar",["Madu","Air","Daun"],1],
+[P7,"Nektar diolah lebah menjadi apa?","Madu",["Susu","Gula pasir","Teh"],1],
+[P8,"Apa yang dilakukan anak-anak saat gotong royong?","Mengumpulkan sampah",["Memotong rumput","Menyapu jalan","Mengecat pagar"],1],
+[P8,"Bagaimana keadaan lingkungan setelah gotong royong?","Bersih dan nyaman",["Kotor dan bau","Ramai dan bising","Gelap dan sepi"],1],
+[P9,"Mengapa Dodi berterima kasih kepada Wawan?","Wawan membagi rotinya",["Wawan meminjamkan buku","Wawan mengantarnya pulang","Wawan memberi uang"],1],
+[P9,"Bagaimana sifat Wawan?","Suka berbagi",["Pelit","Pemarah","Pemalas"],1],
 [P3,"Bagaimana perasaan Dina saat menutup buku?","Sedih",["Senang","Bangga","Bosan"],2],
 [P3,"Apa yang Dina putuskan?","Belajar lebih giat",["Pindah sekolah","Berhenti ulangan","Menyontek"],2],
+[P10,"Apa manfaat selokan yang bersih?","Air hujan tidak menggenang",["Jalan menjadi sempit","Tetangga pindah rumah","Rumah menjadi mahal"],2],
+[P10,"Apa yang dapat kita simpulkan dari bacaan?","Perbuatan baik dapat diikuti orang lain",["Selokan tidak penting","Hujan selalu menyebabkan banjir","Tetangga tidak peduli"],2],
+[P11,"Apa yang terjadi jika daun tidak terkena cahaya matahari?","Tumbuhan menjadi pucat dan lemah",["Tumbuhan menjadi lebih besar","Daun berubah menjadi bunga","Tumbuhan berbuah banyak"],2],
+[P11,"Apa saja yang dibutuhkan tumbuhan untuk tumbuh?","Cahaya matahari, air, dan udara",["Pasir, batu, dan api","Gula, garam, dan minyak","Hanya air"],2],
+[P12,"Berapa lama Rani menabung hingga bisa membeli sepatu?","Tiga bulan",["Tiga hari","Tiga minggu","Tiga tahun"],2],
+[P12,"Sifat apa yang dimiliki Rani?","Hemat dan tekun menabung",["Boros dan pemalas","Pemarah dan sombong","Penakut dan pelupa"],2],
+[P13,"Apa dua penyebab banjir menurut bacaan?","Sampah menyumbat saluran air dan hutan gundul",["Hujan ringan dan sungai dalam","Rumah tinggi dan jalan sempit","Pohon rimbun dan air jernih"],2],
 ["Sampah plastik yang dibuang ke sungai membuat air tercemar. Ikan pun sulit hidup di sana. Karena itu, kita harus membuang sampah pada tempatnya.","Apa pesan utama bacaan tersebut?","Buang sampah pada tempatnya",["Ikan hidup di mana saja","Sungai harus dikeringkan","Plastik itu mahal"],2]];
 
 /* ---------- pembuat soal ---------- */
@@ -454,10 +529,14 @@ function pk(a,L){var x=a.filter(function(i){return i[i.length-1]===L}),y=L>0?a.f
 function qEj(L){var e=pk(EJ,L),o=shuffle(EJ.filter(function(x){return x!==e&&x[2]<=L})).slice(0,3),neg=Math.random()<.5;
  return{t:"ej",key:"ej"+e[0]+neg,sz:"mid",text:"<small>Ejaan</small>Mana penulisan yang <b>"+(neg?"tidak baku":"baku")+"</b>?",ans:neg?e[1]:e[0],
  opts:shuffle([neg?e[1]:e[0]].concat(o.map(function(x){return neg?x[0]:x[1]}))),ex:"Penulisan baku: <b>"+e[0]+"</b>, bukan "+e[1]+"."}}
-function qIm(L){var e=pk(IM,L),P={ber:["ber","be","bel","per","ter","me"],me:["me","mem","men","meng","meny"],pe:["pe","pem","pen","peng","peny"]},
- d=P[e[2]].map(function(p){return p+e[0]}).filter(function(x,i,a){return x!==e[1]&&a.indexOf(x)===i});
- return{t:"im",key:"im"+e[0]+e[2],sz:"mid",text:"<small>Imbuhan</small>Kata dasar “"+e[0]+"” diberi awalan <b>"+e[2]+"-</b> menjadi …",ans:e[1],
- opts:shuffle([e[1]].concat(shuffle(d).slice(0,3))),ex:"“"+e[0]+"” + "+e[2]+"- = <b>"+e[1]+"</b>"}}
+function qIm(L){var e=pk(IM,L),P={ber:["ber","be","bel","per","ter","me"],me:["me","mem","men","meng","meny"],pe:["pe","pem","pen","peng","peny"],kean:["ke","per","pe","ber","me"]},kn=e[2]==="kean",
+ d=P[e[2]].map(function(p){return kn?p+e[0]+"an":p+e[0]}).filter(function(x,i,a){return x!==e[1]&&a.indexOf(x)===i}),lb=kn?"ke- dan akhiran -an":e[2]+"-";
+ return{t:"im",key:"im"+e[0]+e[2],sz:"mid",text:"<small>Imbuhan</small>Kata dasar “"+e[0]+"” diberi awalan <b>"+lb+"</b> menjadi …",ans:e[1],
+ opts:shuffle([e[1]].concat(shuffle(d).slice(0,3))),ex:"“"+e[0]+"” + "+lb+" = <b>"+e[1]+"</b>"}}
+function qHk(L){var e=pk(HK,L),w=e[0].toUpperCase(),a,n=0;do{a=shuffle(w.split(""))}while(a.join("")===w&&++n<20);
+ var pool=HK.filter(function(x){return x!==e&&x[1]<=L&&Math.abs(x[0].length-e[0].length)<=1});if(pool.length<3)pool=HK.filter(function(x){return x!==e});
+ return{t:"hk",key:"hk"+e[0],sz:"mid",text:"<small>Huruf kacau</small>Susun huruf <b>"+a.join(" ")+"</b> menjadi kata …",ans:e[0],
+ opts:shuffle([e[0]].concat(shuffle(pool).slice(0,3).map(function(x){return x[0]}))),ex:"Susunan yang benar: <b>"+e[0]+"</b>."}}
 function qMk(L){var an=Math.random()<.6,A=an?AN:SN,e=pk(A,L),f=Math.random()<.5,w=f?e[0]:e[1],a=f?e[1]:e[0],
  pool=[];A.forEach(function(x){if(x!==e)pool.push(x[0],x[1])});
  return{t:"mk",key:"mk"+e[0]+an+f,sz:"mid",text:"<small>Makna kata</small>"+(an?"Lawan kata":"Persamaan kata")+" “"+w+"” adalah …",ans:a,
@@ -468,13 +547,13 @@ function qBc(L){var e=pk(BC,L);return{t:"bc",key:"bc"+e[0].slice(0,12)+e[1],sz:"
  opts:shuffle([e[2]].concat(e[3])),ex:"Jawabannya: <b>"+e[2]+"</b>. Baca lagi bacaannya pelan-pelan."}}
 function gen(){var n=0,q,w;
  do{w=S.weak.length&&Math.random()<.35;
-  if(w){q=Object.assign({},S.weak[rnd(0,S.weak.length-1)]);q.opts=shuffle(q.opts.slice())}else q=[qEj,qIm,qMk,qKl,qBc][rnd(0,4)](S.lv);n++}
+  if(w){q=Object.assign({},S.weak[rnd(0,S.weak.length-1)]);q.opts=shuffle(q.opts.slice())}else q=[qEj,qIm,qMk,qKl,qBc,qHk][rnd(0,5)](S.lv);n++}
  while(n<40&&S.seen.slice(w?-4:0).indexOf(q.key)>-1);
  S.seen.push(q.key);if(S.seen.length>30)S.seen.shift();return q}
 
 /* ---------- tampilan ---------- */
 function monI(){return DM[S.lv*3+S.mi]}
-function mS(m){var b=S.mi===2;return monSVG(monI(),m,b?160:130,b)}
+function mS(m){var b=S.mi===2;return dkSVG(S.lv*3+S.mi,m,b?160:130,b)}
 function react(ok){var m=document.getElementById("mon"),a=document.getElementById("arena");if(!m)return;m.innerHTML=mS(ok?"sad":"laugh");
  var L=ok?["Aduh! 😭","Ampun... 🥺","Sakit! 😖","Huhu... 😢"]:["Hahaha! 😆","Salah dong~ 🤪","Hihihi! 😜","Yee, meleset! 😝"],t=L[rnd(0,3)];
  say(t,ok);pal(ok);
@@ -483,7 +562,7 @@ function react(ok){var m=document.getElementById("mon"),a=document.getElementByI
    s.style.setProperty("--dx",rnd(-40,40)+"px");s.style.setProperty("--dy",(ok?rnd(50,90):rnd(-80,-40))+"px");a.appendChild(s);setTimeout(function(){s.remove()},750)})}
  if(ok)setTimeout(function(){m.classList.remove("hit");m.classList.add("sad")},450);else m.classList.add("laugh")}
 function menu(){document.documentElement.dataset.game="dk";
- var shelf=DM.map(function(m,j){var on=S.got.indexOf(j)>-1;return '<div class="cw"><div class="slot '+(on?'on':'off')+'">'+monSVG(m,"idle",38,j%3===2)+'</div><small>'+(on?DN[j]:"???")+'</small></div>'}).join("");
+ var shelf=DM.map(function(m,j){var on=S.got.indexOf(j)>-1;return '<div class="cw"><div class="slot '+(on?'on':'off')+'">'+dkSVG(j,"idle",38,j%3===2)+'</div><small>'+(on?DN[j]:"???")+'</small></div>'}).join("");
  var bars=CAT.map(function(c){var d=ST.c[c[0]]||[0,0],p=d[0]?Math.round(d[1]/d[0]*100):0;return '<div class="row"><span>'+c[1]+'</span><span class="soft">'+(d[0]?p+'% ('+d[1]+'/'+d[0]+')':'belum ada')+'</span></div><div class="meter"><i style="width:'+p+'%"></i></div>'}).join("");
  app.innerHTML='<div class="top"><button id="hb">← Kampung</button><button class="ib" id="mu" aria-label="Suara" title="Suara">'+(MUTE?ICO.off:ICO.on)+'</button></div><h1>Detektif Kata</h1>'+
  '<p class="soft">Pencuri kata berkeliaran! Pecahkan kasusnya dengan Bahasa Indonesia yang benar.</p>'+
@@ -517,9 +596,9 @@ function pick(btn){if(S.busy)return;S.busy=true;
 function defeated(){var j=S.lv*3+S.mi,b=S.mi===2;
  if(S.got.indexOf(j)<0){S.got.push(j);sv("pa-dkkoleksi",S.got)}
  snd("win");
- if(b){confetti();app.innerHTML='<div class="center"><h1>Kasus terpecahkan! 🎉</h1><p>Semua pencuri kata di level '+LVN[S.lv]+' sudah tertangkap.</p><div class="mon" style="animation:none">'+monSVG(monI(),"sad",140,true)+'</div><p class="soft">'+(S.weak.length?"Perlu dilatih lagi: "+S.weak.slice(0,3).map(function(w){return CAT.filter(function(c){return c[0]===w.t})[0][1]}).join(", ")+".":"Tanpa salah sama sekali. Hebat!")+'</p><button class="go" id="m">Kembali ke menu</button></div>';
+ if(b){confetti();app.innerHTML='<div class="center"><h1>Kasus terpecahkan! 🎉</h1><p>Semua pencuri kata di level '+LVN[S.lv]+' sudah tertangkap.</p><div class="mon" style="animation:none">'+dkSVG(j,"sad",140,true)+'</div><p class="soft">'+(S.weak.length?"Perlu dilatih lagi: "+S.weak.slice(0,3).map(function(w){return CAT.filter(function(c){return c[0]===w.t})[0][1]}).join(", ")+".":"Tanpa salah sama sekali. Hebat!")+'</p><button class="go" id="m">Kembali ke menu</button></div>';
   document.getElementById("m").onclick=menu}
- else{app.innerHTML='<div class="center"><div class="mon" style="animation:none">'+monSVG(monI(),"sad",110,false)+'</div><h1>'+DN[j]+' kalah!</h1><p>Pencuri kata masuk koleksimu. Siap lawan berikutnya?</p><button class="go" id="n">Lanjut bertarung</button></div>';
+ else{app.innerHTML='<div class="center"><div class="mon" style="animation:none">'+dkSVG(j,"sad",110,false)+'</div><h1>'+DN[j]+' kalah!</h1><p>Pencuri kata masuk koleksimu. Siap lawan berikutnya?</p><button class="go" id="n">Lanjut bertarung</button></div>';
   document.getElementById("n").onclick=function(){S.mi++;monster()}}}
 function over(){app.innerHTML='<div class="center"><div class="mon" style="animation:none">'+mS("laugh")+'</div><h1>Nyawa habis 😴</h1><p>Tidak apa-apa, detektif hebat pun perlu istirahat. Soal yang tadi sulit akan muncul lagi.</p><button class="go" id="r">Coba lagi</button> <button id="m">Menu</button></div>';
  document.getElementById("r").onclick=function(){S.hp=5;monster()};document.getElementById("m").onclick=menu}
@@ -537,7 +616,7 @@ function hub(){document.documentElement.dataset.game="";if(PF.list.length>1&&!PI
  (PF.list.length>1?'<button class="chip" id="chip"><span class="slot on">'+monSVG(avOf(cp()),"idle",26,avOf(cp())%3===2)+'</span><b>'+xe(cp().name)+'</b> <span class="soft">ganti</span></button>':'')+
  '<p class="soft">Pilih permainan. Monster dari semua permainan jadi koleksimu.</p>'+
  '<button class="lv gc ga" id="ga"><span><b>Petualangan Angka</b><small>Berhitung: kali, tambah, kurang, bagi</small><small>'+S.got.length+'/36 monster</small></span><span>'+monSVG(3,"idle",58,false)+'</span></button>'+
- '<button class="lv gc gd" id="gd"><span><b>Detektif Kata</b><small>Bahasa Indonesia: ejaan, imbuhan, bacaan</small><small>'+DK.got().length+'/9 pencuri kata</small></span><span>'+monSVG(14,"idle",58,false)+'</span></button>';
+ '<button class="lv gc gd" id="gd"><span><b>Detektif Kata</b><small>Bahasa Indonesia: ejaan, imbuhan, bacaan</small><small>'+DK.got().length+'/9 pencuri kata</small></span><span>'+dkSVG(0,"idle",58,false)+'</span></button>';
  document.getElementById("ga").onclick=function(){snd("tap");menu()};
  document.getElementById("gd").onclick=function(){snd("tap");DK.menu()};
  document.getElementById("mu").onclick=function(){MUTE=!MUTE;sv("pa-mute",MUTE);snd("tap");hub()};
