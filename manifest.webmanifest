@@ -1,7 +1,7 @@
 {
  "name": "Kampung Monster",
  "short_name": "Monster",
- "description": "Belajar seru bersama monster: berhitung di Petualangan Angka dan Bahasa Indonesia di Detektif Kata.",
+ "description": "Belajar seru bersama monster: berhitung, Bahasa Indonesia, serta uang dan waktu.",
  "lang": "id",
  "start_url": "./index.html",
  "scope": "./",
